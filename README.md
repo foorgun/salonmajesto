@@ -43,9 +43,9 @@ Empfehlung: in Supabase unter Auth → SMTP ebenfalls Resend eintragen, damit di
    - `SALON_NOTIFY_EMAIL` = Adresse, die bei jeder Online-Buchung benachrichtigt wird
    - `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` optional (nur dann wird Plausible geladen)
 2. Deploy. `vercel.json` richtet die Crons ein:
-   - `/api/cron/reminders` stündlich: Erinnerung 24 h vorher
+   - `/api/cron/reminders` täglich 16:00 UTC (17/18 Uhr): Erinnerung an alle Termine am Folgetag
    - `/api/cron/cleanup` täglich: Buchungen älter als 12 Monate löschen
-   (Hinweis: Stündliche Crons brauchen einen Vercel-Pro-Plan; auf Hobby nur täglich.)
+   (Vercel Hobby erlaubt nur tägliche Crons – deshalb Erinnerung am Vortag statt exakt 24 h vorher.)
 3. Domain verbinden.
 
 ## Fotos
