@@ -97,8 +97,10 @@ export const images = {
   instagram: ["/images/insta-1.jpg", "/images/insta-2.jpg", "/images/insta-3.jpg"],
 };
 
+/** Öffentliche Basis-URL: NEXT_PUBLIC_SITE_URL, sonst die Vercel-Produktions-Domain, lokal localhost. */
 export function siteUrl() {
-  return (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  return (process.env.NEXT_PUBLIC_SITE_URL || (vercel ? `https://${vercel}` : "http://localhost:3000")).replace(/\/$/, "");
 }
 
 /** Telefonnummer international für tel:-Links und strukturierte Daten, z. B. +491782521990 */
