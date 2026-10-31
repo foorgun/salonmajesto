@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { z } from "zod";
 import { ANY, assignBarber, getSlots, newCancelToken, rateLimited, resolveServices } from "@/lib/booking";
 import { bookingConfig } from "@/config/salon";
-import { bookingAvailable, repo } from "@/lib/db";
+import { isBookingDemo, repo } from "@/lib/db";
 import { notifySalon, sendBookingConfirmation } from "@/lib/mail";
 import { isValidDate } from "@/lib/time";
 import { SlotTakenError } from "@/lib/types";
@@ -38,11 +38,10 @@ const schema = z.object({
 
 export type BookInput = z.input<typeof schema>;
 export type BookResult =
-  | { ok: true; id: string }
+  | { ok: true; url: string }
   | { ok: false; error: string; field?: string; slotTaken?: boolean; slots?: SlotView[] };
 
 export async function book(input: BookInput): Promise<BookResult> {
-  if (!bookingAvailable) return { ok: false, error: "Online-Buchung ist gerade nicht verfügbar. Bitte ruf uns an." };
   const parsed = schema.safeParse(input);
   if (!parsed.success) {
     const issue = parsed.error.issues[0];
@@ -73,6 +72,18 @@ export async function book(input: BookInput): Promise<BookResult> {
   const startsAt = new Date(slot.startsAt);
   const endsAt = new Date(startsAt.getTime() + (durationMin + bookingConfig.bufferMin) * 60_000);
 
+  // Demo: alles geprüft wie echt, aber nichts speichern und keine Mails – nur die Bestätigungsseite zeigen.
+  if (isBookingDemo) {
+    const params = new URLSearchParams({
+      n: d.name,
+      b: barbers.find((b) => b.id === barberId)?.name ?? "",
+      s: chosen.map((x) => x.name).join("|"),
+      t: startsAt.toISOString(),
+      p: String(chosen.reduce((sum, x) => sum + x.price_cents, 0)),
+    });
+    return { ok: true, url: `/termin/bestaetigt/demo?${params}` };
+  }
+
   try {
     const booking = await repo.createBooking({
       barber_id: barberId,
@@ -94,7 +105,7 @@ export async function book(input: BookInput): Promise<BookResult> {
     });
     const barberName = barbers.find((b) => b.id === barberId)?.name ?? "";
     await Promise.allSettled([sendBookingConfirmation(booking, barberName), notifySalon(booking, barberName)]);
-    return { ok: true, id: booking.id };
+    return { ok: true, url: `/termin/bestaetigt/${booking.id}` };
   } catch (e) {
     if (e instanceof SlotTakenError) {
       const again = await loadSlots(d.barber, d.services, d.date);

@@ -77,10 +77,10 @@ export default async function HomePage() {
             sizes="(min-width: 768px) 50vw, 100vw"
             quality={85}
             priority
-            imgClassName="object-[55%_40%] brightness-[.82]"
+            imgClassName="object-[55%_40%] brightness-[.8]"
           />
-          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-night to-transparent md:h-1/4" aria-hidden />
-          <div className="absolute inset-y-0 left-0 hidden w-2/5 bg-gradient-to-r from-night to-transparent md:block" aria-hidden />
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-night to-transparent md:h-1/3" aria-hidden />
+          <div className="absolute inset-y-0 left-0 hidden w-3/5 bg-gradient-to-r from-night via-night/50 to-transparent md:block" aria-hidden />
         </div>
         <div className="relative mx-auto flex max-w-6xl flex-col justify-end px-5 pb-14 -mt-10 md:mt-0 md:min-h-[560px] md:px-8 md:pb-16 md:pt-24">
           <OpenStatus className="text-paper/70" />

@@ -37,11 +37,13 @@ export function BookingFlow({
   services,
   days,
   initial,
+  demo = false,
 }: {
   barbers: FlowBarber[];
   services: FlowService[];
   days: Day[];
   initial: Initial;
+  demo?: boolean;
 }) {
   const router = useRouter();
   const firstOpen = days.find((d) => d.open)?.date ?? days[0].date;
@@ -147,7 +149,7 @@ export function BookingFlow({
         website: form.website,
       });
       if (res.ok) {
-        router.push(`/termin/bestaetigt/${res.id}`);
+        router.push(res.url);
         return;
       }
       if (res.slotTaken) {
@@ -201,6 +203,11 @@ export function BookingFlow({
             {titles[step - 1].h}
           </h1>
           <p className="mt-2 text-sm text-mute">{titles[step - 1].sub}</p>
+          {demo && step === 4 && (
+            <p className="mt-4 border-l-2 border-ink pl-3 text-xs text-mute">
+              Demo-Modus: Es wird keine echte Buchung angelegt und keine E-Mail verschickt.
+            </p>
+          )}
 
           {error && step !== 4 && (
             <p role="alert" className="mt-6 border-l-2 border-ink pl-3 text-sm">

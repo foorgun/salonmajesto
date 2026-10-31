@@ -8,10 +8,11 @@ export const isSupabaseConfigured = Boolean(
 );
 
 /**
- * Online-Buchung nur mit dauerhafter Datenbank: Supabase oder lokal der Datei-Store.
- * Auf Vercel ohne Supabase zeigt /termin stattdessen Telefon/WhatsApp.
+ * Demo-Modus: Buchungsflow voll klickbar, aber es wird nichts gespeichert und keine Mail verschickt.
+ * Automatisch auf Vercel ohne Supabase (kein dauerhafter Speicher) oder erzwungen per BOOKING_DEMO=1.
  */
-export const bookingAvailable = isSupabaseConfigured || !process.env.VERCEL;
+export const isBookingDemo =
+  process.env.BOOKING_DEMO === "1" || (!isSupabaseConfigured && Boolean(process.env.VERCEL));
 
 /** Supabase, sobald konfiguriert – sonst lokaler Datei-Store (.data/db.json) für die Entwicklung. */
 export const repo: Repo = isSupabaseConfigured ? supabaseRepo : localRepo;

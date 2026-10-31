@@ -54,7 +54,7 @@ function seed(): Db {
   };
 }
 
-// Auf Vercel ist das Dateisystem schreibgeschützt: dort nur Seed-Daten im Speicher (Buchung ist dann deaktiviert, siehe bookingAvailable).
+// Auf Vercel ist das Dateisystem schreibgeschützt: dort nur Seed-Daten im Speicher (Buchung läuft dann im Demo-Modus, siehe isBookingDemo).
 const memoryOnly = Boolean(process.env.VERCEL);
 let memory: Db | null = null;
 

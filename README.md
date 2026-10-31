@@ -16,6 +16,12 @@ Ohne Supabase-Variablen läuft alles mit einem **lokalen Datei-Store** (`.data/d
 Ohne `RESEND_API_KEY` werden alle E-Mails nur in der Konsole ausgegeben.
 Im Dev-Modus ist `/admin` ohne Login erreichbar (mit Hinweis-Banner). In Produktion ist Supabase Pflicht.
 
+## Demo-Modus
+Solange auf Vercel kein Supabase konfiguriert ist (oder `BOOKING_DEMO=1` gesetzt ist), läuft die Buchung als **Demo**:
+Der Flow ist komplett klickbar (echte freie Zeiten aus den Öffnungszeiten), am Ende erscheint die Bestätigungsseite –
+es wird aber **nichts gespeichert und keine E-Mail verschickt**. Hinweise dazu stehen in Schritt 4 und auf der Bestätigung.
+Sobald die Supabase-Variablen gesetzt sind (und `BOOKING_DEMO` leer ist), ist die Buchung automatisch live.
+
 ## Setup Produktion
 
 ### 1. Supabase
