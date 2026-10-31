@@ -54,7 +54,12 @@ function seed(): Db {
   };
 }
 
+// Auf Vercel ist das Dateisystem schreibgeschützt: dort nur Seed-Daten im Speicher (Buchung ist dann deaktiviert, siehe bookingAvailable).
+const memoryOnly = Boolean(process.env.VERCEL);
+let memory: Db | null = null;
+
 function load(): Db {
+  if (memoryOnly) return (memory ??= seed());
   if (!fs.existsSync(FILE)) {
     const db = seed();
     save(db);
@@ -64,6 +69,7 @@ function load(): Db {
 }
 
 function save(db: Db) {
+  if (memoryOnly) return;
   fs.mkdirSync(path.dirname(FILE), { recursive: true });
   fs.writeFileSync(FILE, JSON.stringify(db, null, 2));
 }

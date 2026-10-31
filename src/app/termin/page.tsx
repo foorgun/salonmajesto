@@ -3,7 +3,9 @@ import path from "node:path";
 import type { Metadata } from "next";
 import { BookingFlow, type FlowBarber, type FlowService } from "./BookingFlow";
 import { ANY, getOpenDays } from "@/lib/booking";
-import { repo } from "@/lib/db";
+import Link from "next/link";
+import { phoneIntl, salon, whatsappUrl } from "@/config/salon";
+import { bookingAvailable, repo } from "@/lib/db";
 
 export const metadata: Metadata = {
   title: "Termin buchen",
@@ -16,6 +18,7 @@ const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
 export default async function TerminPage({ searchParams }: { searchParams: SP }) {
   const sp = await searchParams;
+  if (!bookingAvailable) return <BookingUnavailable />;
   const [barbers, services, days] = await Promise.all([repo.listBarbers(), repo.listServices(), getOpenDays()]);
 
   const flowBarbers: FlowBarber[] = barbers.map((b) => {
@@ -46,4 +49,27 @@ export default async function TerminPage({ searchParams }: { searchParams: SP })
   };
 
   return <BookingFlow barbers={flowBarbers} services={flowServices} days={days} initial={initial} />;
+}
+
+function BookingUnavailable() {
+  return (
+    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center px-5 py-16">
+      <p className="label">Termin buchen</p>
+      <h1 className="headline mt-3 text-5xl">Gleich online.</h1>
+      <p className="mt-4 text-[15px] leading-relaxed text-mute">
+        Die Online-Buchung startet in Kürze. Bis dahin kurz anrufen oder per WhatsApp schreiben – oder einfach vorbeikommen.
+      </p>
+      <div className="mt-8 flex flex-col gap-3">
+        <a href={`tel:${phoneIntl()}`} className="btn btn-dark">
+          Anrufen · {salon.phone}
+        </a>
+        <a href={whatsappUrl("Hi, ich hätte gern einen Termin.")} className="btn border border-ink" target="_blank" rel="noopener noreferrer">
+          WhatsApp
+        </a>
+        <Link href="/" className="mt-2 text-center text-sm underline underline-offset-4">
+          Zur Startseite
+        </Link>
+      </div>
+    </main>
+  );
 }

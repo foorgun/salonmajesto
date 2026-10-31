@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { z } from "zod";
 import { ANY, assignBarber, getSlots, newCancelToken, rateLimited, resolveServices } from "@/lib/booking";
 import { bookingConfig } from "@/config/salon";
-import { repo } from "@/lib/db";
+import { bookingAvailable, repo } from "@/lib/db";
 import { notifySalon, sendBookingConfirmation } from "@/lib/mail";
 import { isValidDate } from "@/lib/time";
 import { SlotTakenError } from "@/lib/types";
@@ -42,6 +42,7 @@ export type BookResult =
   | { ok: false; error: string; field?: string; slotTaken?: boolean; slots?: SlotView[] };
 
 export async function book(input: BookInput): Promise<BookResult> {
+  if (!bookingAvailable) return { ok: false, error: "Online-Buchung ist gerade nicht verfügbar. Bitte ruf uns an." };
   const parsed = schema.safeParse(input);
   if (!parsed.success) {
     const issue = parsed.error.issues[0];
